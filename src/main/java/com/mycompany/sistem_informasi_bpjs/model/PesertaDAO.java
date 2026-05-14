@@ -33,21 +33,54 @@ public class PesertaDAO {
                 String jumlahIuran = result.getString("jumlahIuran");
                 
                 Peserta peserta = null;
-                if ("Kelas1".equals(kelas)) {
-                    peserta = new PesertaKelas1(id, nama, status, kelas, 150000, jumlahIuran);
-                } else if ("Kelas2".equals(kelas)) {
-                    peserta = new PesertaKelas1(id, nama, status, kelas, 100000, jumlahIuran);
-                } else if ("Kelas3".equals(kelas)) {
-                    peserta = new PesertaKelas1(id, nama, status, kelas, 50000, jumlahIuran);
-                }
+                if (null != kelas) switch (kelas) {
+                     case "Kelas1" -> peserta = new PesertaKelas1(id, nama, status, kelas, 150000, jumlahIuran);
+                     case "Kelas2" -> peserta = new PesertaKelas1(id, nama, status, kelas, 100000, jumlahIuran);
+                     case "Kelas3" -> peserta = new PesertaKelas1(id, nama, status, kelas, 50000, jumlahIuran);
+                 }
                 
                 list.add(peserta);
-            }
-            
-        } catch ( Exception e) {
-            System.out.println(e);
+            }  
+        } catch(SQLException e) {
+            System.out.println("Error: " + e.getMessage());
         }
         
         return list;
+    }
+    
+    public boolean insert(Peserta peserta) throws SQLException {
+        String idPeserta = peserta.getIdPeserta();
+        String namaPeserta = peserta.getNamaPeserta();
+        String statusPeserta = peserta.getStatusPeserta();
+        String kelasPeserta = peserta.getKelasPeserta();
+        String jumlahIuran = peserta.getJumlahIuran();
+        
+        String sql = "INSERT INTO mahasiswa(id, nama, status, kelas, jumlah_iuran) VALUES('"+ idPeserta +"', '"+ namaPeserta +"', '"+ statusPeserta +"', '"+ kelasPeserta +"', '"+ jumlahIuran +"')";
+        try(Connection conn = KoneksiDB.getConnection()) {
+               Statement stat = conn.createStatement();
+               stat.executeUpdate(sql);
+               return true;
+        } catch(SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    public boolean update(Peserta peserta) throws SQLException {
+        String idPeserta = peserta.getIdPeserta();
+        String namaPeserta = peserta.getNamaPeserta();
+        String statusPeserta = peserta.getStatusPeserta();
+        String kelasPeserta = peserta.getKelasPeserta();
+        String jumlahIuran = peserta.getJumlahIuran();
+        
+        String sql = "UPDATE mahasiswa SET nama='"+ namaPeserta +"', status='"+ statusPeserta +"', kelas='"+ kelasPeserta +"', jumlah_iuran='"+ jumlahIuran +"' WHERE id='"+ idPeserta;
+        try(Connection conn = KoneksiDB.getConnection()) {
+               Statement stat = conn.createStatement();
+               stat.executeUpdate(sql);
+               return true;
+        } catch(SQLException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        return false;
     }
 }
